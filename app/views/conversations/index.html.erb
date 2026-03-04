@@ -1,0 +1,92 @@
+<div class="flex h-screen w-full" data-controller="autoscroll">
+  <%# Sidebar %>
+  <aside class="w-72 bg-gray-900 border-r border-gray-800 flex flex-col">
+    <div class="p-4 border-b border-gray-800">
+      <h1 class="text-lg font-bold text-white flex items-center gap-2">
+        <svg class="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+        </svg>
+        Kimi Math Chat
+      </h1>
+    </div>
+
+    <div class="p-3">
+      <%= link_to conversations_path, data: { turbo_method: :post }, class: "w-full flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium transition-colors" do %>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+        New Chat
+      <% end %>
+    </div>
+
+    <nav class="flex-1 overflow-y-auto px-3 space-y-1">
+      <% @conversations.each do |conv| %>
+        <%= link_to conversation_path(conv),
+            class: "block px-3 py-2 rounded-lg text-sm truncate transition-colors #{conv == @conversation ? 'bg-gray-800 text-white' : 'text-gray-400 hover:bg-gray-800/50 hover:text-gray-200'}" do %>
+          <%= conv.display_title %>
+        <% end %>
+      <% end %>
+    </nav>
+  </aside>
+
+  <%# Main chat area %>
+  <main class="flex-1 flex flex-col bg-gray-950">
+    <% if @conversation %>
+      <%# Header with model selector %>
+      <header class="border-b border-gray-800 px-6 py-3 flex items-center justify-between">
+        <h2 class="text-white font-semibold"><%= @conversation.display_title %></h2>
+        <div data-controller="model-selector" data-model-selector-url-value="<%= update_model_conversation_path(@conversation) %>">
+          <select data-model-selector-target="select" data-action="model-selector#change"
+                  class="bg-gray-800 text-gray-300 text-sm rounded-lg px-3 py-1.5 border border-gray-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none">
+            <% Conversation::AVAILABLE_MODELS.each do |id, name| %>
+              <option value="<%= id %>" <%= 'selected' if @conversation.model_id == id %>><%= name %></option>
+            <% end %>
+          </select>
+        </div>
+      </header>
+
+      <%# Messages %>
+      <div class="flex-1 overflow-y-auto" data-autoscroll-target="container" id="messages-container">
+        <%= turbo_stream_from @conversation %>
+        <div id="messages" class="max-w-4xl mx-auto px-6 py-6 space-y-6" data-controller="math-renderer">
+          <%= render @conversation.messages.order(:created_at) %>
+        </div>
+      </div>
+
+      <%# Input form %>
+      <div class="border-t border-gray-800 px-6 py-4">
+        <div class="max-w-4xl mx-auto">
+          <form action="<%= conversation_messages_path(@conversation) %>" method="post" data-turbo="true"
+                class="flex gap-3" id="message-form">
+            <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+            <input type="text" name="content" placeholder="Ask a math question..."
+                   autocomplete="off" autofocus
+                   class="flex-1 bg-gray-800 text-white rounded-xl px-4 py-3 border border-gray-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none placeholder-gray-500"
+                   id="message-input">
+            <button type="submit"
+                    class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3 rounded-xl font-medium transition-colors flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+              </svg>
+              Send
+            </button>
+          </form>
+        </div>
+      </div>
+    <% else %>
+      <div class="flex-1 flex items-center justify-center">
+        <div class="text-center">
+          <h2 class="text-2xl font-bold text-white mb-2">Welcome to Kimi Math Chat</h2>
+          <p class="text-gray-400 mb-6">Start a new conversation to explore math with verified answers.</p>
+          <%= link_to conversations_path, data: { turbo_method: :post },
+              class: "inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium transition-colors" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            New Chat
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </main>
+</div>

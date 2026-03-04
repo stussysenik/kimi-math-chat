@@ -1,0 +1,6 @@
+<span id="verification_<%= verification.id %>"
+      class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium
+             <%= verification_badge_class(verification) %>">
+  <%= verification_icon(verification) %>
+  <%= verification.verifier.capitalize %>: <%= verification.status.capitalize %>
+</span>

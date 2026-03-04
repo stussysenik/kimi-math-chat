@@ -1,0 +1,40 @@
+<%= turbo_frame_tag dom_id(message) do %>
+  <div class="flex gap-4 <%= message.user? ? 'justify-end' : '' %>" id="<%= dom_id(message) %>">
+    <% if message.assistant? %>
+      <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center flex-shrink-0">
+        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+        </svg>
+      </div>
+    <% end %>
+
+    <div class="max-w-[80%] <%= message.user? ? 'bg-indigo-600 text-white' : 'bg-gray-800 text-gray-100' %> rounded-2xl px-4 py-3 <%= message.user? ? 'rounded-tr-sm' : 'rounded-tl-sm' %>">
+      <% if message.streaming? %>
+        <div class="prose prose-invert prose-sm max-w-none math-content">
+          <%= render_markdown(message.content) %>
+          <span class="inline-block w-2 h-4 bg-indigo-400 animate-pulse ml-1"></span>
+        </div>
+      <% else %>
+        <div class="prose prose-invert prose-sm max-w-none math-content">
+          <%= render_markdown(message.content) %>
+        </div>
+      <% end %>
+
+      <% if message.contains_math? && message.verifications.any? %>
+        <div class="mt-2 pt-2 border-t border-gray-700/50 flex flex-wrap gap-2">
+          <% message.verifications.each do |verification| %>
+            <%= render "verifications/verification", verification: verification %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <% if message.user? %>
+      <div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center flex-shrink-0">
+        <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+        </svg>
+      </div>
+    <% end %>
+  </div>
+<% end %>

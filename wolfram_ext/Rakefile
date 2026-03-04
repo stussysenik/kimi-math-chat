@@ -1,0 +1,7 @@
+require "rb_sys/extensiontask"
+
+RbSys::ExtensionTask.new("wolfram_ext") do |ext|
+  ext.lib_dir = "lib/wolfram_ext"
+end
+
+task default: :compile
