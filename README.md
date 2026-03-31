@@ -1,5 +1,8 @@
 # Kimi Math Chat
 
+![Demo](demo.gif)
+
+
 - edit: coming off the spray of Ruby on Rails is one of the most productive languges so I started experimenting with like yeah
 
 A Rails chat app that uses Kimi LLMs (via NVIDIA NIM) to solve math problems, then automatically verifies every mathematical expression in the response using SymPy and Wolfram Alpha.
