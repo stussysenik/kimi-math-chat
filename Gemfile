@@ -41,7 +41,7 @@ gem "thruster", require: false
 gem "image_processing", "~> 1.2"
 
 # LLM client (OpenAI-compatible, used with NVIDIA NIM endpoint)
-gem "ruby-openai", "~> 7.0"
+gem "ruby-openai", "~> 8.3"
 
 # Markdown rendering
 gem "redcarpet", "~> 3.6"
